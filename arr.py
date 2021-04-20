@@ -12,35 +12,53 @@ class Arr:
         self.set = Settings()
 
         ## Fundamental anchors -- directly equate to the arr min and max
-        self.pixel_origin = (200, 850)
-        self.pixel_w = 1200
-        self.pixel_h = 700
+        #self.pixel_origin = (200, 750)
+        #self.pixel_w = 1200
+        #self.pixel_h = 600
+        self.update_pixel_anchors(1200, 600)
 
         ## How many labels to divide each axis into
         self.x_num_labels = 17 ## Gives shorter floats
         self.y_num_labels = 15
 
         ### Pixel units
-        self.configure_pixel_scale()
+        #self.arr = np.load('data/arr15.npy')
+        #self.arr = np.load('data/arr30.npy')
+        self.arr = np.load('data/arr50.npy')
+        self.configure()
 
-        ### Array units
-        self.arr = np.load('data/basic_arr.npy')
-        self.configure_arr()
-        self.configure_arr_scale()
-
-
-        ### Agnostic units
-        self.configure_conversion_factor()
-        self.get_centroid()
-
-        self.buffer = 50
-        self.configure_false_axes()
-
-        self.regression()
-        self.get_pixels_of_arr()
 
 
     """ CONFIGURATION STUFF """
+    def update_pixel_anchors(self, win_w, win_h):
+        """ When the screen resizes, update the size anchors for the graph """
+
+        ## Pixel width and height
+        self.pixel_w = win_w * 0.7
+        self.pixel_h = win_h * 0.7
+
+        ## Pixel origin
+        x = win_w * self.set.origin_gap_left
+        y = win_h * (1-self.set.origin_gap_bottom)
+
+        self.pixel_origin = (x, y)
+
+
+    def configure(self):
+        """ On initialization and when resizing """
+
+        ## Arr units
+        self.configure_arr()
+        self.configure_arr_scale()
+
+        ## Pixel units
+        self.configure_pixel_scale()
+
+        ## Other
+        self.configure_conversion_factor()
+        self.configure_false_axes()
+        self.get_pixels_of_arr()
+
 
     ### PIXELS
     def configure_pixel_scale(self):
@@ -48,7 +66,7 @@ class Arr:
         # Set pixel min/max
         self.pixel_x_min, self.pixel_y_max = self.pixel_origin
         self.pixel_x_max = self.pixel_x_min + self.pixel_w
-        self.pixel_y_min = self.pixel_y_max - self.pixel_h
+        self.pixel_y_min = self.pixel_y_max - self.pixel_h ## pixel y: 'min' = more 'up'
 
         self.pixel_x_scale = np.linspace( (self.pixel_x_min), (self.pixel_x_max), self.x_num_labels )
         self.pixel_y_scale = np.linspace( (self.pixel_y_max), (self.pixel_y_min), self.y_num_labels )
@@ -130,46 +148,20 @@ class Arr:
         return int(x), int(y) ## Pixel values should be int
 
 
-    def get_centroid(self):
-        x = self.arr[:,0].mean()
-        y = self.arr[:,1].mean()
-
-        self.arr_centroid = [x, y]
-        self.pixel_centroid = list( self.convert_to_pixels( (x, y) ) )
-
 
     def get_pixels_of_arr(self):
         arr = []
         for coord in self.arr:
+            coord = coord[:2]
             pixels = self.convert_to_pixels(coord)
             arr.append( tuple(pixels) )
 
         self.pixels_of_arr = tuple(arr)
 
 
-
-    """ FIND COEFFICIENTS AND SSE FOR BEST-FIT LINE """
-    def regression(self):
-        x_mean, y_mean = self.arr_centroid
-        x_dev = self.arr[:,0] - x_mean
-        y_dev = self.arr[:,1] - y_mean
-
-        numerator = (x_dev * y_dev).sum()
-        denom = (x_dev**2).sum()
-
-        self.b1 = numerator/denom
-        self.b0 = y_mean - self.b1*x_mean
-
-        pred = self.b0 + (self.b1 * self.arr[:,0])
-        error = self.arr[:,1] - pred
-        squared_error = error**2
-        self.SSE = squared_error.sum()
-
-
-
     """ UTILITY """
     def configure_false_axes(self):
-
+        self.buffer = 50
         x, y = self.pixel_origin
 
         self.false_axes_origin = (x - self.buffer, y + self.buffer)

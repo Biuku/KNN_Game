@@ -12,53 +12,44 @@ class Plot(Arr):
         super().__init__()
         self.win = win
         self.printr = Printr(self.win, self.set)
+
+        self.s0 = self.set.red ## Colour of non-survivors
+        self.s1 = self.set.blue  ## Colour of survivors
+
         self.c0 = self.set.grey
         self.c1 = self.set.light_grey ## Arr coord's
         self.c2 = self.set.light_blue ## Pixel coords
 
+    def tracer(self):
+        print(f"\nX: {self.arr[:,0]}\n")
+        print(f"Y: {self.arr[:,1]}\n")
+        print(f"Z: {self.arr[:,2]}\n")
 
-    def update(self, show_centroid):
-        self.show_centroid = show_centroid
 
 
     def draw(self):
         self.draw_axes()
         self.draw_x_axes_labels()
         self.draw_y_axes_labels()
-        self.draw_centroid()
         self.draw_array()
 
 
     def draw_array(self):
 
         for arr_coord in self.arr:
-            px_coord = self.convert_to_pixels(arr_coord)
-            pygame.draw.circle(self.win, self.c2, px_coord, 5, 0)
+            x, y, survived = arr_coord
+            px_coord = self.convert_to_pixels( (x, y) )
 
-            x, y = px_coord
-            arr_text = str( (round(arr_coord[0], 1), round(arr_coord[1], 1) ) )
-            pixel_text = str( (x, y) )
+            text, c = "O", self.s0
+            if survived:
+                text, c = "X", self.s1
 
-            self.printr.coord_printr(arr_text, x-35, y+5, self.c2)
+            text = self.set.small_font.render(text, True, c)
+            self.win.blit( text, px_coord )
+
+            #pygame.draw.circle(self.win, c, px_coord, 3, 0)
 
 
-    def draw_centroid(self):
-
-        if self.show_centroid:
-            c = self.set.object2_538
-
-            x, y = self.arr_centroid
-            text = "Centroid: " + str( ( round(x,1), round(y,1) ) )
-
-            x, y = self.pixel_centroid
-
-            ### Draw horizontal line, vertical lines
-            pygame.draw.line(self.win, c, (self.pixel_x_min, y), (self.pixel_x_max, y), 1)
-            pygame.draw.line(self.win, c, (x, self.pixel_y_max), (x, self.pixel_y_min), 1)
-
-            ### Draw centroid circle and coordinates
-            pygame.draw.circle(self.win, c, self.pixel_centroid, 5, 0)
-            self.printr.coord_printr(text, x+10, y-18, self.c1)
 
 
     def draw_axes(self):
@@ -69,6 +60,7 @@ class Plot(Arr):
 
         pygame.draw.line(self.win, self.c1, (x, y), (x, top), 2)
         pygame.draw.line(self.win, self.c1, (x, y), (right, y), 2)
+
 
 
     def draw_x_axes_labels(self):
@@ -106,7 +98,7 @@ class Plot(Arr):
                 ### Draw labels
                 offset_y = pixel_y - 9
                 arr_label = str( round(self.arr_y_scale[i], 1) )
-                #pixel_label = str( int(self.pixel_y_scale[i]) )
+                # pixel_label = str( int(self.pixel_y_scale[i]) )
 
                 self.printr.coord_printr(arr_label, x - 30, offset_y, self.c0)
-                #self.printr.coord_printr(pixel_label, x - 40, offset_y + 15, self.set.blue)
+                #self.printr.coord_printr(pixel_label, x - 30, offset_y + 15, self.set.blue)
