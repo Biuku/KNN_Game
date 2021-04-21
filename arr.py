@@ -1,4 +1,4 @@
-""" April 18, 2021 """
+""" April 20, 2021 """
 
 import pygame
 import numpy as np
@@ -11,25 +11,38 @@ class Arr:
         pygame.init()
         self.set = Settings()
 
-        ## Fundamental anchors -- directly equate to the arr min and max
-        #self.pixel_origin = (200, 750)
-        #self.pixel_w = 1200
-        #self.pixel_h = 600
-        self.update_pixel_anchors(1200, 600)
-
         ## How many labels to divide each axis into
-        self.x_num_labels = 17 ## Gives shorter floats
+        self.x_num_labels = 17
         self.y_num_labels = 15
 
-        ### Pixel units
-        #self.arr = np.load('data/arr15.npy')
-        #self.arr = np.load('data/arr30.npy')
-        self.arr = np.load('data/arr50.npy')
+        self.arr = self.raw_arr = np.load('data/arr50.npy')
+        self.update_pixel_anchors(1600, 900)
         self.configure()
 
 
-
     """ CONFIGURATION STUFF """
+
+    def configure(self):
+        """ On initialization and when resizing """
+
+        ## Assume two dimensions of independent data
+        self.arr[:,0] = self.normalizr(self.raw_arr[:,0])
+        self.arr[:,1] = self.normalizr(self.raw_arr[:,1])
+
+        self.configure_arr()
+        self.configure_pixel_scale()
+        self.configure_false_axes()
+        self.get_pixels_of_arr()
+
+
+    def normalizr(self, series):
+        """ Takes in an np series (1 col) and scales it to range 0-1 """
+        mn = series.min()
+        mx = series.max()
+
+        return (series - mn) / (mx-mn)
+
+
     def update_pixel_anchors(self, win_w, win_h):
         """ When the screen resizes, update the size anchors for the graph """
 
@@ -42,22 +55,6 @@ class Arr:
         y = win_h * (1-self.set.origin_gap_bottom)
 
         self.pixel_origin = (x, y)
-
-
-    def configure(self):
-        """ On initialization and when resizing """
-
-        ## Arr units
-        self.configure_arr()
-        self.configure_arr_scale()
-
-        ## Pixel units
-        self.configure_pixel_scale()
-
-        ## Other
-        self.configure_conversion_factor()
-        self.configure_false_axes()
-        self.get_pixels_of_arr()
 
 
     ### PIXELS
@@ -74,79 +71,36 @@ class Arr:
 
     ### ARR
     def configure_arr(self):
-        # Set arr min/max
-        x, y = self.arr[:,0], self.arr[:,1]
-        self.arr_x_min, self.arr_x_max = x.min(), x.max()
-        self.arr_y_min, self.arr_y_max = y.min(), y.max()
-
-        self.arr_origin = (self.arr_x_min, self.arr_y_min)
-
-    def configure_arr_scale(self):
-        self.arr_x_scale = np.linspace( self.arr_x_min, self.arr_x_max, self.x_num_labels )
-        self.arr_y_scale = np.linspace( self.arr_y_min, self.arr_y_max, self.y_num_labels )
-
+        self.arr_origin = (0, 0)
+        self.arr_x_scale = np.linspace( 0, 1, self.x_num_labels )
+        self.arr_y_scale = np.linspace( 0, 1, self.y_num_labels )
 
 
     """ CONVERSION STUFF """
-
-    def configure_conversion_factor(self):
-        ## X
-        # Pick the element from the same index location in each scale
-        arr_x = self.arr_x_scale[7]
-        arr_y = self.arr_y_scale[7]
-        pixel_x = self.pixel_x_scale[7]
-        pixel_y = self.pixel_y_scale[7]
-
-        # Zero these
-        arr_x -= self.arr_x_min
-        arr_y -= self.arr_y_min
-        pixel_x -= self.pixel_x_min
-        pixel_y = self.pixel_y_max - pixel_y
-
-        # Get conversion factor
-        self.x_to_arr = arr_x / pixel_x
-        self.y_to_arr = arr_y / pixel_y
-
-        # Reverse direction = inverse
-        self.x_to_pixels = 1 / self.x_to_arr
-        self.y_to_pixels = 1 / self.y_to_arr
-
-
     def convert_to_arr(self, pixel_coords):
+        """ Converts individual coordinates from pixel units to normalized arr units """
         x, y = pixel_coords
 
         ## Zero the passed coord
-        x -= self.pixel_x_min
-        y = self.pixel_y_max - y
-
-        ### Convert
-        x *= self.x_to_arr
-        y *= self.y_to_arr
-
-        ### Add back the zero coord in arr units
-        x += self.arr_x_min
-        y += self.arr_y_min
+        x = (x - self.pixel_x_min) / self.pixel_w
+        y = (self.pixel_y_max - y) / self.pixel_h
 
         return x, y
 
 
     def convert_to_pixels(self, arr_coords):
+        """ Convert from normalized arr units to pygame-useful pixel units """
         x, y = arr_coords
 
-        ## Find x, y values relative to arr origin
-        x -= self.arr_x_min
-        y -= self.arr_y_min
-
         ## Scale those values to be pixels
-        x *= self.x_to_pixels
-        y *= self.y_to_pixels
+        x *= self.pixel_w
+        y *= self.pixel_h
 
         ## Find x, y values relative to arr origin
         x += self.pixel_x_min
         y = self.pixel_y_max - y
 
         return int(x), int(y) ## Pixel values should be int
-
 
 
     def get_pixels_of_arr(self):

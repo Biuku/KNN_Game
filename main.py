@@ -37,6 +37,7 @@ class Main(PygameBasics):
 
     def keydown_events(self, event):
         if event.key == pygame.K_a:
+            #self.circle.tracer()
             pass
 
         if event.key == pygame.K_q:
@@ -56,10 +57,10 @@ class Main(PygameBasics):
 
     def draw(self):
         self.win.fill(self.set.white)
+        
         self.draw_page_border()
-
         self.plot.draw()
-        self.circle.draw()
+        self.circle.draw(self.win_w, self.win_h)
 
         pygame.display.update()
 

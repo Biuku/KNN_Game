@@ -3,13 +3,14 @@
 import pygame
 import math as m
 import random as r
+from setup.settings import Settings
 
 
 class Printr:
-    def __init__(self, win, set):
+    def __init__(self, win):
         pygame.init()
         self.win = win
-        self.set = set
+        self.set = Settings()
 
 
     def coord_printr(self, data, x, y, c):
@@ -17,14 +18,15 @@ class Printr:
         self.win.blit( text, (x, y) )
 
 
-    def print_instructions(self, b0, b1, SSE, y_int, slope, sse):
-        x = self.set.win_w * 0.86 ## lower number --> leftward
-        y = self.set.win_h * 0.06 ## lower number --> upward
+    def print_instructions(self, K, win_w, win_h):
+        x = win_w * 0.88 ## lower number --> leftward
+        y = win_h * 0.06 ## lower number --> upward
 
         texts = [
             'INSTRUCTIONS',
-            '  · Click = move',
-            '',
+            '  · Click: move',
+            'KNN',
+            '  · K = ' + str(K)
             ]
 
         for text in texts:

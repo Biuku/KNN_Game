@@ -11,7 +11,7 @@ class Plot(Arr):
         pygame.init()
         super().__init__()
         self.win = win
-        self.printr = Printr(self.win, self.set)
+        self.printr = Printr(self.win)
 
         self.s0 = self.set.red ## Colour of non-survivors
         self.s1 = self.set.blue  ## Colour of survivors
@@ -20,25 +20,32 @@ class Plot(Arr):
         self.c1 = self.set.light_grey ## Arr coord's
         self.c2 = self.set.light_blue ## Pixel coords
 
-    def tracer(self):
-        print(f"\nX: {self.arr[:,0]}\n")
-        print(f"Y: {self.arr[:,1]}\n")
-        print(f"Z: {self.arr[:,2]}\n")
-
-
 
     def draw(self):
         self.draw_axes()
         self.draw_x_axes_labels()
         self.draw_y_axes_labels()
         self.draw_array()
+        self.draw_origin()
+
+
+    def draw_origin(self):
+        pygame.draw.circle(self.win, self.s0, self.pixel_origin, 6, 0)
+
+        x, y = self.pixel_origin
+        arr_label = str( self.arr_origin )
+        pixel_label = str( int(x) ) + ", " + str( int(y) )
+
+        y-=15
+        self.printr.coord_printr(arr_label, x+12, y, self.c0)
+        self.printr.coord_printr(pixel_label, x+12, y + 15, self.set.blue)
 
 
     def draw_array(self):
 
-        for arr_coord in self.arr:
+        for i, arr_coord in enumerate(self.arr):
             x, y, survived = arr_coord
-            px_coord = self.convert_to_pixels( (x, y) )
+            px_coord = self.pixels_of_arr[i]
 
             text, c = "O", self.s0
             if survived:
@@ -48,8 +55,6 @@ class Plot(Arr):
             self.win.blit( text, px_coord )
 
             #pygame.draw.circle(self.win, c, px_coord, 3, 0)
-
-
 
 
     def draw_axes(self):
@@ -77,11 +82,11 @@ class Plot(Arr):
 
             ### Draw labels
             offset_x = pixel_x - 12
-            arr_label = str( round(self.arr_x_scale[i], 1) )
-            #pixel_label = str( int(self.pixel_x_scale[i]) )
+            arr_label = str( round(self.arr_x_scale[i], 2) )
+            pixel_label = str( int(self.pixel_x_scale[i]) )
 
             self.printr.coord_printr(arr_label, offset_x, y + 10, self.c0)
-            #self.printr.coord_printr(pixel_label, offset_x, y + 25, self.set.blue)
+            self.printr.coord_printr(pixel_label, offset_x, y + 25, self.set.blue)
 
 
     def draw_y_axes_labels(self):
@@ -97,8 +102,8 @@ class Plot(Arr):
 
                 ### Draw labels
                 offset_y = pixel_y - 9
-                arr_label = str( round(self.arr_y_scale[i], 1) )
-                # pixel_label = str( int(self.pixel_y_scale[i]) )
+                arr_label = str( round(self.arr_y_scale[i], 2) )
+                pixel_label = str( int(self.pixel_y_scale[i]) )
 
                 self.printr.coord_printr(arr_label, x - 30, offset_y, self.c0)
-                #self.printr.coord_printr(pixel_label, x - 30, offset_y + 15, self.set.blue)
+                self.printr.coord_printr(pixel_label, x - 30, offset_y + 15, self.set.blue)

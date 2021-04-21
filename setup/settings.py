@@ -1,4 +1,4 @@
-""" April 19, 2021 """
+""" April 20, 2021 """
 
 import pygame
 
@@ -17,6 +17,7 @@ class Settings:
 
         ### Colours
         self.white, self.black = (255, 255, 255), (0, 0, 0)
+        self.ultra_light_grey = (240, 240, 240)
         self.light_grey, self.grey, self.dark_grey = (221, 221, 221), (150,150,150), (45, 45, 45)
         self.blue, self.light_blue = (190, 170, 255), (210, 210, 255),
         self.red, self.light_red = (235, 52, 52), (255, 175, 175)

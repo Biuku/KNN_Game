@@ -14,7 +14,6 @@ class PygameBasics:
         self.win = pygame.display.set_mode((self.win_w, self.win_h), pygame.RESIZABLE)
 
 
-
     """ EVENTS """
 
     def events(self):

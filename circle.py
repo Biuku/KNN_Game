@@ -13,35 +13,48 @@ class Circle(Arr):
         super().__init__()
         pygame.init()
         self.win = win
-        self.printr = Printr(self.win, self.set)
+        self.printr = Printr(self.win)
+
+        self.K = 5
 
         ## Pixel units
         self.pixel_mid = [800, 400]
         self.pixel_radius = 110
 
-
         ## Array units
-        self.arr_mid = (1, 1)
         self.arr_radius = 1
+        self.convert()
+        #self.arr_mid = (1, 1)
+
 
 
     def update(self, moving):
         self.move(moving)
-        #self.update_coords(self):
 
 
-    def update_coords(self):
-        ## If I move recalculate everything ##
-        self.convert()
+    def draw(self, win_w, win_h):
+        self.draw_circle()
+        self.printr.print_instructions(self.K, win_w, win_h)
 
 
-    def draw(self):
-        ## Draw perimeter of circle
-        pygame.draw.circle(self.win, self.set.yellow, self.pixel_mid, self.pixel_radius, 3)
+    def draw_circle(self):
+        c1 = self.set.ultra_light_grey
+        c2 = self.set.light_grey
 
-        ## Draw centre of circle
-        pygame.draw.circle(self.win, self.set.yellow, self.pixel_mid, 5, 0)
-        #self.printr.print_instructions(self.b0, self.b1, self.SSE, self.y_intercept, self.slope, self.sse)
+        pygame.draw.circle(self.win, c1, self.pixel_mid, 40, 0)
+        # pygame.draw.circle(self.win, c1, self.pixel_mid, self.pixel_radius, 1)
+        pygame.draw.circle(self.win, c2, self.pixel_mid, 5, 0)
+
+        px_x, px_y = self.pixel_mid
+        arr_x, arr_y = self.arr_mid
+
+        arr_coord = "(" + str( round(arr_x, 2) ) + ", " + str( round(arr_y, 2) ) + ")"
+        px_coord = "(" + str(px_x) + ", " + str(px_y) + ")"
+
+        y = px_y - 15
+
+        self.printr.coord_printr(arr_coord, px_x+10, y, self.set.grey)
+        self.printr.coord_printr(px_coord, px_x+10, y + 15, self.set.blue)
 
 
     """ UPDATES """
@@ -51,6 +64,8 @@ class Circle(Arr):
             mx, my = pygame.mouse.get_rel()
             self.pixel_mid[0] += mx
             self.pixel_mid[1] += my
+
+            self.convert()
 
     def convert(self):
         self.arr_mid = self.convert_to_arr(self.pixel_mid)
