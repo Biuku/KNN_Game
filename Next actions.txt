@@ -1,0 +1,44 @@
+April 21, 2021
+
+Tomorrow, 
+
+ - Rebuild the structure:
+	- Old structure
+		- Cirle and Plot share "arr", but are separate. arr is static.
+		- But I need circle things to affect plot things. So, they have to be combined
+	- New structure
+		- I should start over with a new Engine
+			- Engine is composed in Main
+			- Engine inherits Arr:
+				- Arr is the data structure, rebuilt around pygame
+				- It's static
+				- It provides var's, lookups and conversion functions
+			- Engine has a draw module:
+				- Draw plot -- axes and array
+				- Draw circle
+				- Draw instructions
+			- Engine has a K I/O module:
+				- Or, maybe this is a module of Main?? 
+				- I'm imagining... press left/right to scale k by 1, or hold up/down to go faster
+			- Engine itself does the stuff below
+
+Engine:
+	- Moves the circle -- takes moving flag from Main, and mx/my
+
+	- Tracks "K" and the middle of the circle
+
+	- Performs the KNN calculation
+		- Calculates euclidian distance to all coordinates
+		- Identifies the K nearest ones
+			- Flags those -- maybe to colour them
+			- Identifies which category they are from (Survived or not Survived)
+				- Thus, the circle midpoint can be categorized
+			- Sets the circle radius based on the furthest "nearest neighbour)
+
+	- Calls the different functions in Draw(), and passes parameters
+
+
+Arr
+	- It would also be nice to be able to view the play in the original array units
+		- i.e., what was the actual fare and age for those people
+	- So, I would need some more complex conversion functions in arr.py

@@ -35,7 +35,6 @@ class Printr:
             y += 22
 
 
-
     def format_rss(self, rss):
         if rss:
             return ("{:,}".format(int(rss)))

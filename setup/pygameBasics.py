@@ -7,11 +7,11 @@ class PygameBasics:
     def __init__(self):
         pygame.init()
         self.set = Settings()
-
-        self.win_w = 1600
-        self.win_h = 900
-
-        self.win = pygame.display.set_mode((self.win_w, self.win_h), pygame.RESIZABLE)
+        # 
+        # self.win_w = 1600
+        # self.win_h = 900
+        #
+        # self.win = pygame.display.set_mode((self.win_w, self.win_h), pygame.RESIZABLE)
 
 
     """ EVENTS """

@@ -1,4 +1,4 @@
-""" April 20, 2021 """
+""" April 22, 2021 """
 
 import pygame
 
@@ -9,8 +9,6 @@ class Settings:
 
         ## Set gap in % from edge of pygame window to page border
         self.border_gap = 0.02
-        self.origin_gap_left = self.border_gap + 0.07 ## lower = left
-        self.origin_gap_bottom = self.border_gap + 0.12 ## lower = up
 
         self.clock = pygame.time.Clock()
         self.FPS = 120
@@ -26,6 +24,8 @@ class Settings:
         ## Colour styles
         self.object1_538 = (217, 240, 222)
         self.object2_538 = (255, 234, 217)
+
+        self.background = self.white
 
         ### Fonts
         self.small_font = pygame.font.SysFont('lucidasans', 10)

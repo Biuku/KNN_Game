@@ -1,4 +1,4 @@
-""" APRIL 20, 2021 """
+""" APRIL 22, 2021 """
 
 
 import pygame
@@ -13,6 +13,10 @@ class Main(PygameBasics):
     def __init__(self):
         pygame.init()
         super().__init__()
+
+        self.win_w = 1600
+        self.win_h = 900
+        self.win = pygame.display.set_mode((self.win_w, self.win_h), pygame.RESIZABLE)
 
         self.circle = Circle(self.win)
         self.plot = Plot(self.win)
@@ -37,7 +41,6 @@ class Main(PygameBasics):
 
     def keydown_events(self, event):
         if event.key == pygame.K_a:
-            #self.circle.tracer()
             pass
 
         if event.key == pygame.K_q:
@@ -57,7 +60,7 @@ class Main(PygameBasics):
 
     def draw(self):
         self.win.fill(self.set.white)
-        
+
         self.draw_page_border()
         self.plot.draw()
         self.circle.draw(self.win_w, self.win_h)
@@ -69,7 +72,7 @@ class Main(PygameBasics):
 
     def main(self):
         while True:
-            self.win.fill(self.set.white)
+            self.win.fill(self.set.background)
             self.set.clock.tick(self.set.FPS)
             self.events()
             self.updates()

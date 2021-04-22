@@ -1,4 +1,4 @@
-""" April 20, 2021 """
+""" April 21, 2021 """
 
 
 import pygame
@@ -19,13 +19,10 @@ class Circle(Arr):
 
         ## Pixel units
         self.pixel_mid = [800, 400]
-        self.pixel_radius = 110
+        self.radius = 110
 
         ## Array units
-        self.arr_radius = 1
         self.convert()
-        #self.arr_mid = (1, 1)
-
 
 
     def update(self, moving):
@@ -41,20 +38,30 @@ class Circle(Arr):
         c1 = self.set.ultra_light_grey
         c2 = self.set.light_grey
 
-        pygame.draw.circle(self.win, c1, self.pixel_mid, 40, 0)
-        # pygame.draw.circle(self.win, c1, self.pixel_mid, self.pixel_radius, 1)
+        pygame.draw.circle(self.win, c1, self.pixel_mid, self.radius, 1)
         pygame.draw.circle(self.win, c2, self.pixel_mid, 5, 0)
+
+        self.draw_circle_coord()
+
+    def draw_circle_coord(self):
+
 
         px_x, px_y = self.pixel_mid
         arr_x, arr_y = self.arr_mid
 
-        arr_coord = "(" + str( round(arr_x, 2) ) + ", " + str( round(arr_y, 2) ) + ")"
+        arr_x = "Fare: £" + str( int(arr_x) )
+        arr_y = "Age: " + str( int(arr_y) )
         px_coord = "(" + str(px_x) + ", " + str(px_y) + ")"
 
         y = px_y - 15
+        x = px_x + self.radius + 12
 
-        self.printr.coord_printr(arr_coord, px_x+10, y, self.set.grey)
-        self.printr.coord_printr(px_coord, px_x+10, y + 15, self.set.blue)
+        ## Draw white rect
+        pygame.draw.rect(self.win, self.set.background, pygame.Rect(x-5, y, 60, 30), 0)
+
+        self.printr.coord_printr(arr_x, x, y, self.set.grey)
+        self.printr.coord_printr(arr_y, x, y + 15, self.set.grey)
+        #self.printr.coord_printr(px_coord, px_x+10, y + 30, self.set.blue)
 
 
     """ UPDATES """
@@ -68,4 +75,5 @@ class Circle(Arr):
             self.convert()
 
     def convert(self):
-        self.arr_mid = self.convert_to_arr(self.pixel_mid)
+        norm_arr_mid = self.convert_to_arr(self.pixel_mid)
+        self.arr_mid = self.convert_norm_arr_to_arr(norm_arr_mid)
