@@ -7,7 +7,7 @@ class PygameBasics:
     def __init__(self):
         pygame.init()
         self.set = Settings()
-        # 
+        #
         # self.win_w = 1600
         # self.win_h = 900
         #
@@ -51,8 +51,8 @@ class PygameBasics:
         self.win_w = self.win.get_width()
         self.win_h = self.win.get_height()
 
-        self.plot.update_pixel_anchors(self.win_w, self.win_h)
-        self.plot.configure()
+        self.algo.update_pixel_anchors(self.win_w, self.win_h)
+        self.algo.configure()
 
 
     """ Draw background """

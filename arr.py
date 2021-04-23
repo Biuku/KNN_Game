@@ -15,15 +15,14 @@ class Arr:
         self.origin_gap_bottom = 0.12 + self.set.border_gap ## lower = up
 
         ## How many labels to divide each axis into
-        self.x_num_labels = 17
-        self.y_num_labels = 15
+        self.x_num_labels = 15 ## Delete
+        self.y_num_labels = 15 ## Delete
+        self.axis_labels = 15
 
-        #self.arr = np.load('data/arr50.npy')
-        self.arr = np.load('data/arr100.npy')
+        self.arr = np.load('data/arr250.npy')
 
         self.update_pixel_anchors(1600, 900)
         self.configure()
-        self.configure_false_axes()
 
 
     """ A. CONFIGURE ARRAYS AND AXIS SCALES FOR 3 UNITS: ARR, NORM_ARR, AND PIXELS """
@@ -36,9 +35,10 @@ class Arr:
         self.pixels = self.get_pixel_datastructure()
 
         #  Axis scales
-        self.arr_x_scale, self.arr_y_scale = self.configure_arr_scale()
-        self.norm_arr_x_scale, self.norm_arr_y_scale = self.configure_norm_arr_scale()
-        self.pixel_x_scale, self.pixel_y_scale = self.configure_pixel_scale()
+        self.arr_scale = self.configure_arr_scale()
+        self.norm_arr_scale = self.configure_norm_arr_scale()
+        self.pixel_scale = self.configure_pixel_scale()
+
 
     """ A1. Configure arrays """
 
@@ -51,7 +51,10 @@ class Arr:
             mn, mx = series.min(), series.max()
             norm_arr[:,i] = (series - mn) / (mx - mn)
 
-        return norm_arr
+        ## Add columns for euclidian distance (float) and nn (bool) -- zeros for now
+        arr = np.zeros( (len(norm_arr), 2) )
+
+        return  np.append(norm_arr, arr, axis=1)
 
 
     def get_pixel_datastructure(self, n=2):
@@ -63,37 +66,39 @@ class Arr:
 
         return np.array(li)
 
+
     """ A2. Configure scales """
 
     def configure_arr_scale(self):
         x_min, y_min = self.arr[:,0].min(), self.arr[:,1].min()
         x_max, y_max = self.arr[:,0].max(), self.arr[:,1].max()
 
-        x_scale = np.linspace( x_min, x_max, self.x_num_labels )
-        y_scale = np.linspace( y_min, y_max, self.y_num_labels )
+        labels = self.axis_labels
 
-        return x_scale, y_scale
+        x = np.linspace( x_min, x_max, labels ).reshape(labels, 1)
+        y = np.linspace( y_min, y_max, labels ).reshape(labels, 1)
 
+        return np.concatenate((x, y), axis = 1)
 
     ### ARR SCALE
     def configure_norm_arr_scale(self):
-        x_scale = np.linspace( 0, 1, self.x_num_labels )
-        y_scale = np.linspace( 0, 1, self.y_num_labels )
+        labels = self.axis_labels
+        x = np.linspace( 0, 1, labels ).reshape(labels, 1)
+        y = np.linspace( 0, 1, labels ).reshape(labels, 1)
 
-        return x_scale, y_scale
-
+        return np.concatenate( (x, y), axis = 1)
 
     ### PIXELS
     def configure_pixel_scale(self):
+        labels = self.axis_labels
         x_min, y_max = self.pixel_origin
         x_max = x_min + self.pixel_w
         y_min = y_max - self.pixel_h ## pixel y: 'min' = more 'up'
 
-        x_scale = np.linspace( (x_min), (x_max), self.x_num_labels )
-        y_scale = np.linspace( (y_max), (y_min), self.y_num_labels )
+        x = np.linspace( x_min, x_max, labels ).reshape(labels, 1)
+        y = np.linspace( y_max, y_min, labels ).reshape(labels, 1)
 
-        return x_scale, y_scale
-
+        return np.concatenate( (x, y), axis = 1)
 
 
     """ CONVERSION STUFF """
@@ -111,31 +116,26 @@ class Arr:
         return x, y
 
 
-    """ ****************** """
-
     def convert_norm_arr_to_arr(self, norm_arr_coords):
         ### Converts x, y, norm_arr units to units of the original arr ###
         i = 7
         x, y = norm_arr_coords
 
-        x = x * (self.arr_x_scale[i] / self.norm_arr_x_scale[i])
-        y = y * (self.arr_y_scale[i] / self.norm_arr_y_scale[i])
+        x = x * (self.arr_scale[i,0] / self.norm_arr_scale[i,0])
+        y = y * (self.arr_scale[i,1] / self.norm_arr_scale[i,1])
 
         return x, y
+
 
     def convert_arr_to_norm_arr(self, arr_coords):
         ### Converts x, y units of the original arr to norm_arr units ###
         i = 7
         x, y = arr_coords
 
-        x = x * (self.norm_arr_x_scale[i] / self.arr_x_scale[i])
-        y = y * (self.norm_arr_y_scale[i] / self.arr_y_scale[i])
+        x = x * (self.norm_arr_scale[i,0] / self.arr_scale[i,0])
+        y = y * (self.norm_arr_scale[i,1] / self.arr_scale[i,1])
 
         return x, y
-
-
-
-
 
 
     def convert_to_pixels(self, arr_coords):
@@ -143,11 +143,9 @@ class Arr:
         x, y = arr_coords
         pixel_x_min, pixel_y_max = self.pixel_origin
 
-        ## Scale those values to be pixels
         x *= self.pixel_w
         y *= self.pixel_h
 
-        ## Find x, y values relative to arr origin
         x += pixel_x_min
         y = pixel_y_max - y
 
@@ -167,14 +165,3 @@ class Arr:
         x = win_w * self.origin_gap_left
         y = win_h * (1-self.origin_gap_bottom)
         self.pixel_origin = (x, y)
-
-
-
-    """ UTILITY """
-    def configure_false_axes(self):
-        self.buffer = 50
-        x, y = self.pixel_origin
-
-        self.false_axes_origin = (x - self.buffer, y + self.buffer)
-        self.false_axis_w = self.pixel_w + (2 * self.buffer)
-        self.false_axis_h = self.pixel_h + (2 * self.buffer)
