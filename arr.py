@@ -19,7 +19,7 @@ class Arr:
         self.y_num_labels = 15 ## Delete
         self.axis_labels = 15
 
-        self.arr = np.load('data/arr250.npy')
+        self.arr = np.load('data/arr.npy')
 
         self.update_pixel_anchors(1600, 900)
         self.configure()

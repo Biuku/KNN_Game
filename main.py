@@ -37,17 +37,33 @@ class Main(PygameBasics):
 
     def keydown_events(self, event):
         if event.key == pygame.K_a:
-            self.algo.knn()
-            # pass
+            self.algo.update_k(-2)
 
-        if event.key == pygame.K_c:
+        if event.key == pygame.K_d:
+            self.algo.update_k(2)
+
+        if event.key == pygame.K_SPACE:
             self.draw_outer_circle = not self.draw_outer_circle
 
         if event.key == pygame.K_q:
             pygame.quit(), quit()
 
+
     def keyup_events(self, event):
         pass
+
+
+    def update_window_size(self, event):
+        """ called from pygameBasicselif event.type == pygame.VIDEORESIZE: """
+        if event:
+            self.win = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
+
+        ## When user resizes the window, adjust the w and h values everything else is anchored to
+        self.win_w = self.win.get_width()
+        self.win_h = self.win.get_height()
+
+        self.algo.update_pixel_anchors(self.win_w, self.win_h)
+        self.algo.configure()
 
     """ UPDATES """
 

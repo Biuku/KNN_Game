@@ -18,20 +18,28 @@ class Printr:
         self.win.blit( text, (x, y) )
 
 
-    def print_instructions(self, K, win_w, win_h):
-        x = win_w * 0.88 ## lower number --> leftward
+    def print_instructions(self, k, survived, win_w, win_h):
+        x = win_w * 0.86 ## lower number --> leftward
         y = win_h * 0.06 ## lower number --> upward
+
+        text_survived = "Die"
+        if survived:
+            text_survived = "Live"
 
         texts = [
             'INSTRUCTIONS',
             '  · Click: move',
-            '  · c = Show KNN circle',
+            '  · a = decrease K',
+            '  · d = increase K',
+            '  · Spacebar = Show KNN circle',
+            '',
             'KNN',
-            '  · K = ' + str(K)
+            '  · K: ' + str(k),
+            '  · Prediction: ' + text_survived,
             ]
 
         for text in texts:
-            print_instructions = self.set.small_font.render(text, True, self.set.grey)
+            print_instructions = self.set.med_font.render(text, True, self.set.grey)
             self.win.blit( print_instructions, (x, y) )
             y += 22
 

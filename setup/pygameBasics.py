@@ -7,11 +7,6 @@ class PygameBasics:
     def __init__(self):
         pygame.init()
         self.set = Settings()
-        #
-        # self.win_w = 1600
-        # self.win_h = 900
-        #
-        # self.win = pygame.display.set_mode((self.win_w, self.win_h), pygame.RESIZABLE)
 
 
     """ EVENTS """
@@ -42,17 +37,6 @@ class PygameBasics:
             elif event.type == pygame.QUIT:
                 pygame.quit(), quit()
 
-
-    def update_window_size(self, event):
-        if event:
-            self.win = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
-
-        ## When user resizes the window, adjust the w and h values everything else is anchored to
-        self.win_w = self.win.get_width()
-        self.win_h = self.win.get_height()
-
-        self.algo.update_pixel_anchors(self.win_w, self.win_h)
-        self.algo.configure()
 
 
     """ Draw background """
