@@ -45,13 +45,15 @@ class Draw:
             x, y, survived, euclid, nn = arr_coord ## Last two cols track nn status
             px_coord = self.pixels[i]
 
-
-            text, c = "X", self.s0
+            text = "X"
             if survived:
-                text, c = "O", self.set.black
+                text = "O"
 
+            c = self.set.grey
             if nn:
-                c = self.c2
+                c = self.s0
+                if survived:
+                    c = self.s1
 
             text = self.set.small_font.render(text, True, c)
             self.win.blit( text, px_coord )

@@ -25,6 +25,7 @@ class Printr:
         texts = [
             'INSTRUCTIONS',
             '  · Click: move',
+            '  · c = Show KNN circle',
             'KNN',
             '  · K = ' + str(K)
             ]

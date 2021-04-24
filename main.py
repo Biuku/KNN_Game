@@ -21,6 +21,7 @@ class Main(PygameBasics):
 
         ## Movement flags
         self.moving = False
+        self.draw_outer_circle = False
 
 
     """ EVENTS """
@@ -36,12 +37,11 @@ class Main(PygameBasics):
 
     def keydown_events(self, event):
         if event.key == pygame.K_a:
-            # self.algo.knn()
-            pass
+            self.algo.knn()
+            # pass
 
-        if event.key == pygame.K_d:
-            # self.algo.tracer()
-            pass
+        if event.key == pygame.K_c:
+            self.draw_outer_circle = not self.draw_outer_circle
 
         if event.key == pygame.K_q:
             pygame.quit(), quit()
@@ -52,8 +52,8 @@ class Main(PygameBasics):
     """ UPDATES """
 
     def updates(self):
-        # self.algo.update_pixel_anchors(self.win_w, self.win_h)
-        self.algo.update(self.moving)
+        self.algo.update_flags(self.moving, self.draw_outer_circle)
+        self.algo.update()
         self.draw()
 
 
