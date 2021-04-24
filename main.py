@@ -13,8 +13,7 @@ class Main(PygameBasics):
         pygame.init()
         super().__init__()
 
-        self.win_w = 1600
-        self.win_h = 900
+        self.win_w, self.win_h  = 1600, 900
         self.win = pygame.display.set_mode((self.win_w, self.win_h), pygame.RESIZABLE)
 
         self.algo = Algo(self.win)
@@ -31,19 +30,21 @@ class Main(PygameBasics):
         self.moving = True
 
 
-    def right_click_events(self):
-        pass
-
     def mouse_button_up_events(self):
         self.moving = False
 
+
     def keydown_events(self, event):
         if event.key == pygame.K_a:
+            # self.algo.knn()
+            pass
+
+        if event.key == pygame.K_d:
+            # self.algo.tracer()
             pass
 
         if event.key == pygame.K_q:
             pygame.quit(), quit()
-
 
     def keyup_events(self, event):
         pass
@@ -51,17 +52,15 @@ class Main(PygameBasics):
     """ UPDATES """
 
     def updates(self):
-        self.algo.update_pixel_anchors(self.win_w, self.win_h)
+        # self.algo.update_pixel_anchors(self.win_w, self.win_h)
         self.algo.update(self.moving)
         self.draw()
 
 
     def draw(self):
         self.win.fill(self.set.white)
-
         self.draw_page_border()
         self.algo.draw_things(self.win_w, self.win_h)
-        #self.circle.draw(self.win_w, self.win_h)
 
         pygame.display.update()
 

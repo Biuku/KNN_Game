@@ -7,15 +7,13 @@ from setup.printr import Printr
 
 class Draw:
 
-    def __init__(self, win, norm_arr, pixels):
+    def __init__(self, win, pixels):
         pygame.init()
         self.win = win
         self.printr = Printr(self.win)
         self.set = Settings()
 
-        self.norm_arr = norm_arr
         self.pixels = pixels
-
 
         self.s0 = self.set.red ## Colour of non-survivors
         self.s1 = self.set.blue  ## Colour of survivors
@@ -33,28 +31,30 @@ class Draw:
         self.configure_false_axes()
 
 
-    def draw_plot(self):
+    def draw_plot(self, norm_arr):
         self.draw_axes()
         self.draw_x_axis_labels()
         self.draw_y_axis_labels()
-        self.draw_array()
+        self.draw_array(norm_arr)
         #self.draw_origin()
 
 
-    def draw_array(self):
+    def draw_array(self, norm_arr):
 
-        for i, arr_coord in enumerate(self.norm_arr[:,:-2]):
-            x, y, survived = arr_coord ## Last two cols track nn status
+        for i, arr_coord in enumerate(norm_arr):
+            x, y, survived, euclid, nn = arr_coord ## Last two cols track nn status
             px_coord = self.pixels[i]
+
 
             text, c = "X", self.s0
             if survived:
-                text, c = "O", self.s1
+                text, c = "O", self.set.black
+
+            if nn:
+                c = self.c2
 
             text = self.set.small_font.render(text, True, c)
             self.win.blit( text, px_coord )
-
-            #pygame.draw.circle(self.win, c, px_coord, 3, 0)
 
 
     def draw_axes(self):
@@ -85,7 +85,7 @@ class Draw:
             pixel_label = str( int(self.pixel_scale[i,0]) )
 
             self.printr.coord_printr(arr_label, offset_x, y + 10, self.c0)
-            #self.printr.coord_printr(pixel_label, offset_x, y + 25, self.set.blue)
+            self.printr.coord_printr(pixel_label, offset_x, y + 25, self.set.blue)
 
 
     def draw_y_axis_labels(self):
@@ -105,7 +105,7 @@ class Draw:
                 pixel_label = str( int(self.pixel_scale[i,1]) )
 
                 self.printr.coord_printr(arr_label, x - 40, offset_y, self.c0)
-                #self.printr.coord_printr(pixel_label, x - 40, offset_y + 12, self.set.blue)
+                self.printr.coord_printr(pixel_label, x - 40, offset_y + 12, self.set.blue)
 
 
     """ Draw circle stuff """
@@ -115,15 +115,15 @@ class Draw:
         c2 = self.set.light_grey
 
         pygame.draw.circle(self.win, c1, pixel_mid, radius, 1)
-        pygame.draw.circle(self.win, c2, pixel_mid, 5, 0)
+        pygame.draw.circle(self.win, c2, pixel_mid, 5, 2)
 
         self.draw_circle_coord(arr_mid, pixel_mid, radius)
 
 
     def draw_circle_coord(self, arr_mid, pixel_mid, radius):
 
-        px_x, px_y = pixel_mid
         arr_x, arr_y = arr_mid
+        px_x, px_y = pixel_mid
 
         arr_x = "Fare: £" + str( int(arr_x) )
         arr_y = "Age: " + str( int(arr_y) )
@@ -137,22 +137,32 @@ class Draw:
 
         self.printr.coord_printr(arr_x, x, y, self.set.grey)
         self.printr.coord_printr(arr_y, x, y + 15, self.set.grey)
-        #self.printr.coord_printr(px_coord, px_x+10, y + 30, self.set.blue)
+        #self.printr.coord_printr(px_coord, x, y + 30, self.set.blue)
 
 
 
-    def draw_origin(self):
-        pygame.draw.circle(self.win, self.s0, self.pixel_origin, 6, 0)
 
-        arr_origin = (self.arr_scale[0])
 
-        x, y = self.pixel_origin
-        arr_label = str( arr_origin )
-        pixel_label = str( int(x) ) + ", " + str( int(y) )
 
-        y-=15
-        self.printr.coord_printr(arr_label, x+12, y, self.c0)
-        self.printr.coord_printr(pixel_label, x+12, y + 15, self.set.blue)
+
+
+
+
+    """ Meh """
+
+    #
+    # def draw_origin(self):
+    #     pygame.draw.circle(self.win, self.s0, self.pixel_origin, 6, 0)
+    #
+    #     arr_origin = (self.arr_scale[0])
+    #
+    #     x, y = self.pixel_origin
+    #     arr_label = str( arr_origin )
+    #     pixel_label = str( int(x) ) + ", " + str( int(y) )
+    #
+    #     y-=15
+    #     self.printr.coord_printr(arr_label, x+12, y, self.c0)
+    #     self.printr.coord_printr(pixel_label, x+12, y + 15, self.set.blue)
 
 
 

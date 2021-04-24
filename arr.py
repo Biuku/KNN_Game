@@ -19,7 +19,7 @@ class Arr:
         self.y_num_labels = 15 ## Delete
         self.axis_labels = 15
 
-        self.arr = np.load('data/arr250.npy')
+        self.arr = np.load('data/arr50.npy')
 
         self.update_pixel_anchors(1600, 900)
         self.configure()
@@ -44,14 +44,19 @@ class Arr:
 
     def get_normalized_arr(self, n=1):
         ### Scales np array's first n cols to range 0-1 ###
+        """
+        - [0, 1, 2] = x, y, survived
+        - [3] = distance
+        - [4] = bool: is nn
+        """
         norm_arr = self.arr.copy() ## Deep copy
 
         for i in range(n+1):
             series = self.arr[:,i]
             mn, mx = series.min(), series.max()
-            norm_arr[:,i] = (series - mn) / (mx - mn)
+            norm_arr[:,i] = (series - mn) / (mx - mn) # Vector
 
-        ## Add columns for euclidian distance (float) and nn (bool) -- zeros for now
+        ## Append cols [3, 4]: distance and nn
         arr = np.zeros( (len(norm_arr), 2) )
 
         return  np.append(norm_arr, arr, axis=1)
@@ -61,7 +66,7 @@ class Arr:
         ### Scales normalized array to pixel units ###
         li = []
         for coord in self.norm_arr:
-            pixels = self.convert_to_pixels(coord[:n])
+            pixels = self.convert_norm_arr_to_pixels(coord[:n])
             li.append( tuple(pixels) )
 
         return np.array(li)
@@ -70,15 +75,13 @@ class Arr:
     """ A2. Configure scales """
 
     def configure_arr_scale(self):
-        x_min, y_min = self.arr[:,0].min(), self.arr[:,1].min()
-        x_max, y_max = self.arr[:,0].max(), self.arr[:,1].max()
-
         labels = self.axis_labels
+        x, y = self.arr[:,0], self.arr[:,1]
 
-        x = np.linspace( x_min, x_max, labels ).reshape(labels, 1)
-        y = np.linspace( y_min, y_max, labels ).reshape(labels, 1)
+        x_scale = np.linspace( x.min(), x.max(), labels ).reshape(labels, 1)
+        y_scale = np.linspace( y.min(), y.max(), labels ).reshape(labels, 1)
 
-        return np.concatenate((x, y), axis = 1)
+        return np.concatenate((x_scale, y_scale), axis = 1)
 
     ### ARR SCALE
     def configure_norm_arr_scale(self):
@@ -102,7 +105,7 @@ class Arr:
 
 
     """ CONVERSION STUFF """
-    def convert_to_arr(self, pixel_coords):
+    def convert_pixel_to_norm_arr(self, pixel_coords):
         """ Converts x, y pixel coordinates to original arr units """
         x, y = pixel_coords
 
@@ -138,7 +141,7 @@ class Arr:
         return x, y
 
 
-    def convert_to_pixels(self, arr_coords):
+    def convert_norm_arr_to_pixels(self, arr_coords):
         """ Convert from normalized arr units to pygame-useful pixel units """
         x, y = arr_coords
         pixel_x_min, pixel_y_max = self.pixel_origin
