@@ -1,11 +1,9 @@
 """ APRIL 22, 2021 """
 
-
 import pygame
 from setup.settings import Settings
 from setup.pygameBasics import PygameBasics
 from algo import Algo
-
 
 
 class Main(PygameBasics):
@@ -30,10 +28,11 @@ class Main(PygameBasics):
         pygame.mouse.get_rel()
         self.moving = True
 
+    def right_click_events(self):
+        pass
 
     def mouse_button_up_events(self):
         self.moving = False
-
 
     def keydown_events(self, event):
         if event.key == pygame.K_a:
@@ -47,7 +46,6 @@ class Main(PygameBasics):
 
         if event.key == pygame.K_q:
             pygame.quit(), quit()
-
 
     def keyup_events(self, event):
         pass
@@ -64,12 +62,14 @@ class Main(PygameBasics):
 
         self.algo.update_pixel_anchors(self.win_w, self.win_h)
         self.algo.configure()
+        self.algo.configure_draw()
+
 
     """ UPDATES """
 
     def updates(self):
-        self.algo.update_flags(self.moving, self.draw_outer_circle)
-        self.algo.update()
+        self.update_window_size(False)
+        self.algo.update(self.moving, self.draw_outer_circle)
         self.draw()
 
 

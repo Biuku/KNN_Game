@@ -58,7 +58,6 @@ class Arr:
 
         ## Append cols [3, 4]: distance and nn
         arr = np.zeros( (len(norm_arr), 2) )
-
         return  np.append(norm_arr, arr, axis=1)
 
 
@@ -104,7 +103,7 @@ class Arr:
         return np.concatenate( (x, y), axis = 1)
 
 
-    """ CONVERSION STUFF """
+    """ A3. CONVERSION STUFF """
     def convert_pixel_to_norm_arr(self, pixel_coords):
         """ Converts x, y pixel coordinates to original arr units """
         x, y = pixel_coords
@@ -155,7 +154,7 @@ class Arr:
         return int(x), int(y) ## Pixel values should be int
 
 
-    """ SCREEN SIZE ADJUSTMENTS """
+    """ A4. SCREEN SIZE ADJUSTMENTS """
 
     def update_pixel_anchors(self, win_w, win_h):
         ### When the screen resizes, update the size anchors for the graph ###

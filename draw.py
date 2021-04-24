@@ -15,12 +15,9 @@ class Draw:
 
         self.pixels = pixels
 
-        self.s0 = self.set.red ## Colour of non-survivors
-        self.s1 = self.set.blue  ## Colour of survivors
-
         self.c0 = self.set.grey
-        self.c1 = self.set.light_grey ## Arr coord's
-        self.c2 = self.set.light_blue ## Pixel coords
+        self.c1 = self.set.light_grey
+        self.c2 = self.set.ultra_light_grey
 
 
     def draw_plot(self, norm_arr):
@@ -44,16 +41,15 @@ class Draw:
 
             c = self.c1
             if nn:
-                c = self.s0
+                c = self.set.red
                 if survived:
-                    c = self.s1
+                    c = self.set.blue
 
             text = self.set.small_font.render(text, True, c)
             self.win.blit( text, px_coord )
 
 
     def draw_axes(self):
-        c = self.set.light_grey
         x, y = self.false_axes_origin
         right = x + self.false_axis_w
         top = y - self.false_axis_h
@@ -76,11 +72,11 @@ class Draw:
             ### Draw labels
             offset_x = pixel_x - 12
 
-            arr_label = str(int(self.arr_scale[i,0]))
+            arr_label = "£" + str(int(self.arr_scale[i,0]))
             pixel_label = str( int(self.pixel_scale[i,0]) )
 
             self.printr.coord_printr(arr_label, offset_x, y + 10, self.c0)
-            self.printr.coord_printr(pixel_label, offset_x, y + 25, self.set.blue)
+            #self.printr.coord_printr(pixel_label, offset_x, y + 25, self.set.blue)
 
 
     def draw_y_axis_labels(self):
@@ -95,38 +91,33 @@ class Draw:
                 pygame.draw.circle(self.win, self.set.grey, (x+1, pixel_y), 2, 0)
 
                 ### Draw labels
-                offset_y = pixel_y - 14
-                arr_label = str(int(self.arr_scale[i,1]))
+                offset_y = pixel_y - 8
+                arr_label = "Age: " + str(int(self.arr_scale[i,1]))
                 pixel_label = str( int(self.pixel_scale[i,1]) )
 
-                self.printr.coord_printr(arr_label, x - 40, offset_y, self.c0)
-                self.printr.coord_printr(pixel_label, x - 40, offset_y + 12, self.set.blue)
+                self.printr.coord_printr(arr_label, x - 45, offset_y, self.c0)
+                #self.printr.coord_printr(pixel_label, x - 40, offset_y + 12, self.set.blue)
 
 
     """ DRAW CIRCLE """
 
     def draw_circle(self, arr_mid, pixel_mid, radius, survived):
-        c1 = self.set.ultra_light_grey
-        c2 = self.set.light_grey
-
-        pygame.draw.circle(self.win, c1, pixel_mid, radius, 1)
+        pygame.draw.circle(self.win, self.c2, pixel_mid, radius, 1)
         pygame.draw.circle(self.win, self.set.dark_grey, pixel_mid, 3, 0)
 
         self.draw_circle_coord(arr_mid, pixel_mid, radius, survived)
 
 
     def draw_circle_coord(self, arr_mid, pixel_mid, radius, survived):
-
         arr_x, arr_y = arr_mid
         px_x, px_y = pixel_mid
 
         arr_x = "Fare: £" + str( int(arr_x) )
         arr_y = "Age: " + str( int(arr_y) )
 
+        survive_text = "Prediction: Die"
         if survived:
             survive_text = "Prediction: Live"
-        else:
-            survive_text = "Prediction: Die"
 
         px_coord = "(" + str(px_x) + ", " + str(px_y) + ")"
 
@@ -134,7 +125,7 @@ class Draw:
         x = px_x + radius + 12
 
         ## Draw white rect
-        pygame.draw.rect(self.win, self.set.background, pygame.Rect(x-7, y-5, 92, 53), 1)
+        pygame.draw.rect(self.win, self.set.background, pygame.Rect(x-7, y-5, 92, 53), 0)
 
         self.printr.coord_printr(arr_x, x, y, self.set.grey)
         self.printr.coord_printr(arr_y, x, y + 15, self.set.grey)
@@ -143,23 +134,7 @@ class Draw:
 
 
 
-
-
     """ Meh """
-
-    # def draw_origin(self):
-    #     pygame.draw.circle(self.win, self.s0, self.pixel_origin, 6, 0)
-    #
-    #     arr_origin = (self.arr_scale[0])
-    #
-    #     x, y = self.pixel_origin
-    #     arr_label = str( arr_origin )
-    #     pixel_label = str( int(x) ) + ", " + str( int(y) )
-    #
-    #     y-=15
-    #     self.printr.coord_printr(arr_label, x+12, y, self.c0)
-    #     self.printr.coord_printr(pixel_label, x+12, y + 15, self.set.blue)
-
 
     """ UTILITY """
     def configure_scales(self, arr, px):
@@ -177,7 +152,22 @@ class Draw:
         self.pixel_w = self.pixel_scale[-1,0] - self.pixel_scale[0,0]
         self.pixel_h = self.pixel_scale[0,1] - self.pixel_scale[-1,1]
 
-
         self.false_axes_origin = (x - buffer, y + buffer)
         self.false_axis_w = self.pixel_w + (2 * buffer)
         self.false_axis_h = self.pixel_h + (2 * buffer)
+
+
+
+
+    # def draw_origin(self):
+    #     pygame.draw.circle(self.win, self.s0, self.pixel_origin, 6, 0)
+    #
+    #     arr_origin = (self.arr_scale[0])
+    #
+    #     x, y = self.pixel_origin
+    #     arr_label = str( arr_origin )
+    #     pixel_label = str( int(x) ) + ", " + str( int(y) )
+    #
+    #     y-=15
+    #     self.printr.coord_printr(arr_label, x+12, y, self.c0)
+    #     self.printr.coord_printr(pixel_label, x+12, y + 15, self.set.blue)

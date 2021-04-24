@@ -42,9 +42,3 @@ class Printr:
             print_instructions = self.set.med_font.render(text, True, self.set.grey)
             self.win.blit( print_instructions, (x, y) )
             y += 22
-
-
-    def format_rss(self, rss):
-        if rss:
-            return ("{:,}".format(int(rss)))
-        return str(0)
